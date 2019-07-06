@@ -1,0 +1,1 @@
+# FCoin-wechat-helper
