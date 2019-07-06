@@ -1,32 +1,24 @@
 import { FCoin } from '../../share/FCoin';
 import Math2 from '../../share/lib/math2';
 import { WsResponseAllTickersThis, SymbolInfo } from '../../types/FCoin';
-import { Room } from 'wechaty';
 import { DataCache } from '../../share/cache';
+import { FCoinHttp, FCoinRequest } from '../../share/FCoin/webapi';
 const dateformat = require('dateformat-util');
 
-export async function GetMsgResTemplate (CoinName: string, room: Room | null) {
+export async function GetMsgResTemplate (CoinName: string, topic: string) {
   const revert: string[] = [];
   if (CoinName === '帮助') {
     revert.push('.帮助 => 显示通用功能');
     revert.push('.FT => 币价');
     revert.push('.FI-150 => 150档位网址');
-    revert.push('.BTC 150 => 150档位网址');
+    revert.push('.BTC是什么 => BTC信息');
     revert.push('.网址 => FCoin网址');
     revert.push('.杠杠 => 理财和杠杠数据');
     revert.push('.理财 => 理财和杠杠数据');
     revert.push('.FToken => ft分布数据');
-    if (room && DataCache.Data.RoomUse.indexOf(room.id) > -1) {
+    if (topic && DataCache.Data.RoomUse.indexOf(topic) > -1) {
       return revert.join('\r\n').replace(/\./ig, '');
     }
-    return revert.join('\r\n');
-  }
-  const usdt = await FCoin.UsdtGet();
-  if (CoinName === 'usdt') {
-    if (usdt === 0) {
-      return '稍等一下，数据还没取到。';
-    }
-    revert.push(`FCoin-OTC: USDT ${usdt}`);
     return revert.join('\r\n');
   }
 
@@ -98,7 +90,63 @@ export async function GetMsgResTemplate (CoinName: string, room: Room | null) {
     return revert.join('\r\n');
   }
 
-  const reg = new RegExp(/(.*)[\-\ \_\#\~\&\>\.\^\%\@]150$/);
+  const coinInfo = CoinName.match(/(.*)是什么$/);
+  const coinInfo2 = CoinName.match(/显示(.*)在FCoin的备案$/);
+  if (coinInfo || coinInfo2) {
+    const lastInfo = (coinInfo || coinInfo2)!;
+    const name = (lastInfo[1] || '').trim().toLocaleLowerCase();
+    if (!name || !name.match(/^[a-zA-Z0-9_]+/)) return '';
+    const info = await FCoinHttp.get(`/openapi/v3/currency_manage/currency/${name}`, {
+      timeout: 5000,
+      headers: {
+        'accept-language': 'zh',
+      },
+    }).then(FCoinRequest);
+    if (info.Error()) return '';
+    if (!info.Data) return '';
+    const data = info.Data as any;
+    if (!data.properties) return '';
+    if (data.full_name === data.properties.name_cn) {
+      revert.push(`${data.name.toLocaleUpperCase()}/${data.properties.name_cn}`);
+    } else {
+      revert.push(`${data.name.toLocaleUpperCase()}/${data.full_name}/${data.properties.name_cn}`);
+    }
+    if (coinInfo2) {
+      for (const i in data.properties) revert.push(`${i}：${data.properties[i]}`);
+    } else {
+      revert.push(`发行时间：${dateformat.format(new Date(data.release_at), 'yyyy-MM-dd')}`);
+      revert.push(`发行总量：${data.properties.amount}`);
+      if (data.properties.circulation) revert.push(`流通总量：${data.properties.circulation}`);
+      if (data.properties.open_guidance_price) revert.push(`私募价格：${data.properties.open_guidance_price}`);
+      if (data.properties.white_paper_url) revert.push(`白皮书：${data.properties.white_paper_url}`);
+      if (data.properties.website_url) revert.push(`官网：${data.properties.website_url}`);
+      if (data.properties.block_query_url) revert.push(`合约地址：${data.properties.block_query_url}`);
+      if (data.properties.currency_desc) revert.push(`Token介绍：${data.properties.currency_desc}`);
+    }
+
+    return revert.join('\r\n');
+  }
+
+  const music = CoinName.match(/放歌[\-\ \_\#\~\&\>\.\^\%\@]?(.*)/);
+  if (music) {
+    const name = (music[1] || 'FT100').trim();
+    revert.push(`正在播放  《${name}》`);
+    revert.push('━━━●━━━───────');
+    revert.push(`5:24`);
+    revert.push('⇆          ◁      ❚❚      ▷          ↻ ');
+    return revert.join('\r\n');
+  }
+
+  const usdt = await FCoin.UsdtGet();
+  if (CoinName === 'usdt') {
+    if (usdt === 0) {
+      return '稍等一下，数据还没取到。';
+    }
+    revert.push(`FCoin-OTC: USDT ${usdt}`);
+    return revert.join('\r\n');
+  }
+
+  const reg = new RegExp(/(.*)[\-\ \_\#\~\&\>\.\^\%\@]?150$/);
   const match = CoinName.match(reg);
   let CoinNameArgs = '';
   if (match) {
@@ -142,7 +190,11 @@ function GetCoinSowTemplate (revert: string[], info: WsResponseAllTickersThis, b
   const Main = info.main.toLocaleUpperCase();
   revert.push(`FCoin: ${info.coin.toLocaleUpperCase()}${CountRmbString(info.main, data.LastPrice)}`);
   revert.push(`最新成交价：${data.LastPrice.toFixed(baseInfo.price_decimal)} ${Main}`);
-  revert.push(`24小时均价：${Math2.decimal(Math2.div(data.OneDayVolume2, data.OneDayVolume1), baseInfo.price_decimal).toFixed(baseInfo.price_decimal)} ${Main}`);
+  if (data.OneDayVolume1 === 0) {
+    revert.push(`24小时内无成交量`);
+  } else {
+    revert.push(`24小时均价：${Math2.decimal(Math2.div(data.OneDayVolume2, data.OneDayVolume1), baseInfo.price_decimal).toFixed(baseInfo.price_decimal)} ${Main}`);
+  }
   revert.push(`24小时最高：${data.HighestH24Price.toFixed(baseInfo.price_decimal)} ${Main}`);
   revert.push(`24小时最低：${data.LowestH24Price.toFixed(baseInfo.price_decimal)} ${Main}`);
   revert.push(`24小时涨幅：${Math2.mul(Math2.decimal(Math2.div(Math2.add(-data.BeforeH24Price, data.LastPrice), data.BeforeH24Price), 4), 100)}%`);

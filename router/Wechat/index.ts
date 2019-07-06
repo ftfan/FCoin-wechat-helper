@@ -31,6 +31,7 @@ bot.on('message', async (msg: Message) => {
   const content = msg.text(); // 消息内容
   const room = msg.room(); // 是否是群消息
   const to = msg.to();
+  let topic = '';
 
   if (!contact) {
     logger.error('contact is null, %o', msg);
@@ -38,10 +39,10 @@ bot.on('message', async (msg: Message) => {
   }
 
   if (room) {
-    const topic = await room.topic();
-    console.log(`${room.id}  ${topic} 【${contact!.name()}】: ${content}`);
+    topic = await room.topic();
+    console.log(`【${contact!.name()}】 ${topic}: ${content}`);
   } else {
-    console.log(`【${contact!.name()}】 消息内容: ${content}`);
+    console.log(`【${contact!.name()}】: ${content}`);
   }
 
   // 这里暂时只处理文字消息
@@ -62,14 +63,14 @@ bot.on('message', async (msg: Message) => {
     if (res) {
       const cmd = res[1] || '';
       if (cmd === '简约模式' && room) {
-        if (DataCache.Data.RoomUse.indexOf(room.id) > -1) return;
-        DataCache.Data.RoomUse.push(room.id);
+        if (DataCache.Data.RoomUse.indexOf(topic) > -1) return;
+        DataCache.Data.RoomUse.push(topic);
         DataCache.Save();
         room.say('操作成功，查看功能输入：帮助');
         return;
       }
       if (cmd === '退出简约模式' && room) {
-        const index = DataCache.Data.RoomUse.indexOf(room.id);
+        const index = DataCache.Data.RoomUse.indexOf(topic);
         if (index === -1) return;
         DataCache.Data.RoomUse.splice(index, 1);
         DataCache.Save();
@@ -83,13 +84,13 @@ bot.on('message', async (msg: Message) => {
   const res = content.match(reg);
   let matchText = '';
   if (!res) {
-    if (room && DataCache.Data.RoomUse.indexOf(room.id) === -1) return;
+    if (room && DataCache.Data.RoomUse.indexOf(topic) === -1) return;
     matchText = content || '';
   } else {
     matchText = res[1] || '';
   }
   const CoinName = matchText.trim().toLocaleLowerCase();
-  const revert = await GetMsgResTemplate(CoinName, room);
+  const revert = await GetMsgResTemplate(CoinName, topic);
   if (revert.trim() === '') {
     return;
   }
