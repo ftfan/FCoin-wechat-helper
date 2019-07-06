@@ -14,6 +14,6 @@ module.exports = {
     instances: Config.WebSiteInfo.InstanceNumber,
     max_memory_restart: Config.WebSiteInfo.maxMemoryRestart,
     ignore_watch: ['node_modules', 'logs', '.git', '.svn', '.eslintrc'],
-    watch: ['./bin/', './app.js', './config/', './types/', './router/'],
+    watch: ['./bin/', './app.js', './config/', './types/', './router/', './share/'],
   }],
 };
