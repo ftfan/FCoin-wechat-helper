@@ -90,8 +90,8 @@ export async function GetMsgResTemplate (CoinName: string, topic: string) {
     return revert.join('\r\n');
   }
 
-  const coinInfo = CoinName.match(/(.*)是什么$/);
-  const coinInfo2 = CoinName.match(/显示(.*)在FCoin的备案$/);
+  const coinInfo = CoinName.match(/(.*)是什么$/) || CoinName.match(/^什么是(.*)/);
+  const coinInfo2 = CoinName.match(/(.*)的备案$/);
   if (coinInfo || coinInfo2) {
     const lastInfo = (coinInfo || coinInfo2)!;
     const name = (lastInfo[1] || '').trim().toLocaleLowerCase();
