@@ -1,6 +1,6 @@
 import Axios from 'axios';
 import { CodeObj, Code } from '../../types/Code';
-import { FCoinTickerData } from 'types/FCoinWatch';
+import { FCoinTickerData } from '../../types/FCoinWatch';
 
 export const FCoinDataApiHandler = Axios.create({
   baseURL: 'http://127.0.0.1:7777',

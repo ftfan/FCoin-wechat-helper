@@ -9,10 +9,10 @@ const copyFiles = [
 // tsc.
 
 // 执行输出
-execSync(`tsc --outDir ${outDir}`, {
-  cwd: path.join(__dirname),
-  stdio: process.stdio,
-});
+// execSync(`tsc --outDir ${outDir}`, {
+//   cwd: path.join(__dirname),
+//   stdio: process.stdio,
+// });
 
 copyFiles.forEach((file) => {
   const readStream = fs.createReadStream(path.join(__dirname, file));

@@ -4,11 +4,8 @@
   "description": "fcoin wechat helper",
   "main": "index.js",
   "scripts": {
-    "start-dev": "pm2 start pm2.config.js --env dev",
-    "start-test": "pm2 start pm2.config.js --env test",
-    "start-pro": "pm2 start pm2.config.js --env pro",
-    "build": "node .build.js --env dev",
-    "build-pro": "node .build.js --env pro",
+    "start": "pm2 start pm2.config.js",
+    "build": "tsc && node .build.js",
     "test": "mocha -r ts-node/register tests/unit/**/*.spec.ts --colors",
     "lint": "tslint --project ."
   },

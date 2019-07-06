@@ -65,11 +65,18 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "**/*.ts"
+    "bin/**/*.ts",
+    "config/**/*.ts",
+    "router/**/*.ts",
+    "share/**/*.ts",
+    "tests/**/*.ts",
+    "types/**/*.ts",
+    "app.ts",
+    "pm2.config.ts",
   ],
   "exclude": [
-    "node_modules",
-    "dist",
-    "target"
+    "node_modules/",
+    "dist/",
+    "target/"
   ]
 }
