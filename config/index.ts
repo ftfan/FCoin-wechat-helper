@@ -11,6 +11,8 @@ export const Config = {
   RootAuthPwd: '~FT100 FI100 FM100 FJ100 FF100~', // 超级管理员认证时需要的密码
   CacheDir: path.join(__dirname, '../'),
 
+  FCoinDomain: 'fcoin.com',
+
   // 服务器日志路径 /logs/
   loggerDist: path.join(__dirname, '../logs/'),
   loggerPattern: `yyyy-MM-dd/hh.txt`,

@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { CodeObj, Code } from '../../types/Code';
+import { Config } from '../../config';
 
 const axiosConf = {
   // 统一的请求配置
@@ -43,7 +44,7 @@ function Proxy (baseURL: string) {
   proxy.interceptors.response.use(axiosConf.afterResponse, axiosConf.catchError); // res处理
   return proxy;
 }
-export const FCoinHttp = Proxy('https://www.fcoin.pro');
+export const FCoinHttp = Proxy('https://www.' + Config.FCoinDomain);
 
 export interface FCoinResponse<T> {
   status: 'ok' | 'error';

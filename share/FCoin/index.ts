@@ -5,6 +5,7 @@ import { logger } from '../../share/logger';
 import { FCoinHttp, FCoinRequest } from './webapi';
 import { TickerData, WsResponseCandle, WsResponseTicker } from 'fcoin-nodejs-api/src/types';
 import { WsResponseAllTickersThis, SymbolInfo, SymbolMsg, FCoinSymbols } from '../../types/FCoin';
+import { Config } from '../../config';
 
 let IndexArg = 0;
 
@@ -94,7 +95,7 @@ class FCoinData {
     SymbolMsg: {} as { [index: string]: SymbolMsg; },
   };
 
-  io = new FCoinApi('', '', undefined, 'fcoin.pro');
+  io = new FCoinApi('', '', undefined, Config.FCoinDomain);
 
   constructor () {
     //
@@ -104,7 +105,7 @@ class FCoinData {
   async Reload () {
     await this.FeatchSymbols();
     if (this.state.FCoinWs.Close) this.state.FCoinWs.Close();
-    this.state.FCoinWs = new FcoinWebSocket(undefined, 'fcoin.pro');
+    this.state.FCoinWs = new FcoinWebSocket(undefined, Config.FCoinDomain);
     this.state.FCoinWs.HeartbeatInit(5000); // 5秒呼吸
     this.state.WsInitTime = this.state.FCoinWs.LastHeartbeat.ts;
     this.state.Candles = [];
