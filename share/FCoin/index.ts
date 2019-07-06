@@ -149,8 +149,14 @@ class FCoinData {
       FCoinHttp.get('/openapi/v2/symbols').then(FCoinRequest),
       FCoinHttp.get('/openapi/v1/categories').then(FCoinRequest),
     ]);
-    if (res.Error()) return res;
-    if (cate.Error()) return cate;
+    if (res.Error()) {
+      logger.error('/openapi/v2/symbols', res);
+      return res;
+    }
+    if (cate.Error()) {
+      logger.error('/openapi/v1/categories', cate);
+      return cate;
+    }
     this.UsdtGet();
     const resData = res.Data as FCoinSymbols;
     this.state.Symbols = resData.symbols;
