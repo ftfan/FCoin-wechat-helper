@@ -10,8 +10,8 @@ export async function GetMsgResTemplate (CoinName: string, topic: string) {
   if (CoinName === '帮助') {
     revert.push('.帮助 => 显示通用功能');
     revert.push('.FT => 币价');
-    revert.push('.FI-150 => 150档位网址');
-    revert.push('.BTC是什么 => BTC信息');
+    revert.push('.FT 150 => 150档位网址');
+    revert.push('.FT是什么 => BTC信息');
     revert.push('.网址 => FCoin网址');
     revert.push('.杠杠 => 理财和杠杠数据');
     revert.push('.理财 => 理财和杠杠数据');
@@ -90,7 +90,7 @@ export async function GetMsgResTemplate (CoinName: string, topic: string) {
     return revert.join('\r\n');
   }
 
-  const coinInfo = CoinName.match(/(.*)是什么$/) || CoinName.match(/^什么是(.*)/);
+  const coinInfo = CoinName.match(/(.*?)[\-\ \_\#\~\&\>\.\^\%\@]?是什么$/) || CoinName.match(/^什么是(.*)/);
   const coinInfo2 = CoinName.match(/(.*)的备案$/);
   if (coinInfo || coinInfo2) {
     const lastInfo = (coinInfo || coinInfo2)!;
@@ -146,7 +146,7 @@ export async function GetMsgResTemplate (CoinName: string, topic: string) {
     return revert.join('\r\n');
   }
 
-  const reg = new RegExp(/(.*)[\-\ \_\#\~\&\>\.\^\%\@]?150$/);
+  const reg = new RegExp(/(.*?)[\-\ \_\#\~\&\>\.\^\%\@]?150$/);
   const match = CoinName.match(reg);
   let CoinNameArgs = '';
   if (match) {
