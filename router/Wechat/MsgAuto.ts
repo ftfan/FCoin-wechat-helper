@@ -11,7 +11,7 @@ export async function GetMsgResTemplate (CoinName: string, topic: string) {
     revert.push('.帮助 => 显示通用功能');
     revert.push('.FT => 币价');
     revert.push('.FT 150 => 150档位网址');
-    revert.push('.FT是什么 => BTC信息');
+    revert.push('.FT是什么 => FT信息');
     revert.push('.网址 => FCoin网址');
     revert.push('.杠杠 => 理财和杠杠数据');
     revert.push('.理财 => 理财和杠杠数据');
@@ -130,7 +130,7 @@ export async function GetMsgResTemplate (CoinName: string, topic: string) {
   const music = CoinName.match(/放歌[\-\ \_\#\~\&\>\.\^\%\@]?(.*)/);
   if (music) {
     const name = (music[1] || 'FT100').trim();
-    revert.push(`正在播放  《${name}》`);
+    revert.push(`正在播放  《${name.toLocaleUpperCase()}》`);
     revert.push('━━━●━━━───────');
     revert.push(`5:24`);
     revert.push('⇆          ◁      ❚❚      ▷          ↻ ');
