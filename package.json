@@ -74,6 +74,6 @@
     "tslint": "^5.9.1",
     "tslint-config-mk": "^1.1.6",
     "typescript": "^2.9.2",
-    "ws": "^7.0.1"
+    "ws": "^7.4.6"
   }
 }
